@@ -43,7 +43,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Work Order": "public/js/work_order.js",
+	"Job Card": "public/js/job_card.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -132,13 +135,19 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Work Order": {
+		"before_validate": "pce_sanpra.public.py.work_order.set_values_from_bom",
+		"after_insert": "pce_sanpra.public.py.work_order.create_work_orders_for_sub_assemblies",
+	},
+	"Job Card": {
+		"before_insert": "pce_sanpra.public.py.job_card.set_check_list_from_work_order",
+		"validate": "pce_sanpra.public.py.job_card.validate_job_card_qty",
+		"before_submit": "pce_sanpra.public.py.job_card.mandetory_job_card_qty",
+	},
+}
+
+
 
 # Scheduled Tasks
 # ---------------
@@ -161,6 +170,15 @@ app_license = "mit"
 # 	],
 # }
 
+
+scheduler_events = {
+	"cron": {
+		"0 2 * * 3": [
+			"pce_sanpra.public.py.shift_assignment.create_weekly_shift_assignments"
+		],
+	},
+}
+
 # Testing
 # -------
 
@@ -177,6 +195,11 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
+
+override_doctype_class = {
+	"Salary Slip": "pce_sanpra.pce_hr.salary_slip.CustomSalarySlip",
+}
+
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "pce_sanpra.event.get_events"
 # }
@@ -250,3 +273,58 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# Fixtures
+
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Item-custom_create_automatic_work_order_for_sub_assembly",
+                    "BOM-custom_cost_center",
+					"BOM-custom_check_list",
+					"BOM-custom_ct_check_list_items",
+					"Work Order-custom_cost_center",
+					"Work Order-custom_wo_check_list_items",
+					"Work Order-custom_check_list",
+					"Job Card-custom_check_list_items",
+					"Job Card-custom_jc_check_list_items",
+
+                ],
+            ]
+        ],
+    },
+	{
+		"dt": "Property Setter",
+		"filters": [
+			[
+				"name",
+				"in",
+				[
+					"BOM-scrap_section-hidden",
+					"BOM-costing-hidden",
+					"BOM-more_info_tab-hidden",
+					"BOM-website_section-hidden",
+					"BOM-allow_alternative_item-hidden",
+					"BOM-track_semi_finished_goods-hidden",
+					"Work Order-work_order_configuration-hidden",
+					"Work Order-more_info-hidden",
+					"Work Order-track_semi_finished_goods-hidden",
+					"Work Order-additional_transferred_qty-hidden",
+					"Work Order-disassembled_qty-hidden",
+					"Work Order-use_multi_level_bom-default",
+					"Job Card-scheduled_time_tab-hidden",
+					"Job Card-timing_detail-hidden",
+					"Job Card-scrap_items_section-hidden",
+					"Job Card-more_information-hidden",
+					"Job Card-is_subcontracted-hidden",
+					"Job Card-production_section-hidden",
+				],
+			]
+		],
+	},
+]
