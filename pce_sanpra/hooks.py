@@ -46,6 +46,9 @@ app_license = "mit"
 doctype_js = {
 	"Work Order": "public/js/work_order.js",
 	"Job Card": "public/js/job_card.js",
+	"Material Request": "public/js/materia_request.js",
+	"Quotation": "public/js/quotation.js",
+	"Stock Entry": "public/js/stock_entry.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -200,9 +203,14 @@ override_doctype_class = {
 	"Salary Slip": "pce_sanpra.pce_hr.salary_slip.CustomSalarySlip",
 }
 
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "pce_sanpra.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.stock.doctype.material_request.material_request.make_purchase_order": (
+		"pce_sanpra.public.py.material_request.make_purchase_order"
+	),
+	"erpnext.selling.doctype.quotation.quotation.make_sales_order": (
+		"pce_sanpra.public.py.quotation.make_sales_order"
+	),
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
@@ -293,6 +301,10 @@ fixtures = [
 					"Work Order-custom_check_list",
 					"Job Card-custom_check_list_items",
 					"Job Card-custom_jc_check_list_items",
+					"Job Card-custom_cost_center",
+					"Material Request-custom_cost_center",
+					"Quotation-custom_cost_center",
+					"Stock Entry-custom_cost_center",
 
                 ],
             ]
@@ -323,6 +335,14 @@ fixtures = [
 					"Job Card-more_information-hidden",
 					"Job Card-is_subcontracted-hidden",
 					"Job Card-production_section-hidden",
+					"Purchase Order-cost_center-required",
+					"Purchase Receipt-cost_center-required",
+					"Purchase Invoice-cost_center-required",
+					"Payment Entry-cost_center-required",
+					"Sales Order-cost_center-required",
+					"Sales Invoice-cost_center-required",
+					"Delivery Note-cost_center-required",
+					"Job Card-employee-read_only"
 				],
 			]
 		],
